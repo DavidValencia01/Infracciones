@@ -9,6 +9,23 @@ import uuid
 import os
 import sys
 import asyncio
+import requests
+
+
+
+MODEL_PATH = "runs/detect/vehicle_detection_model/weights/best.pt"
+MODEL_URL = "https://www.dropbox.com/scl/fo/x8rsrnx6xuztiqq5oaw1l/APBFJQo4GMXWXR3YPq9o_lw?rlkey=u4povqxupwk1r1iabmq48oi10&st=8ukxn0pe&dl=1" 
+
+os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+
+if not os.path.exists(MODEL_PATH):
+    print("Descargando modelo...")
+    response = requests.get(MODEL_URL)
+    with open(MODEL_PATH, "wb") as f:
+        f.write(response.content)
+    print("Modelo descargado correctamente.")
+
+
 
 # Ajuste de Event Loop en Windows para evitar errores de Proactor (WinError 10054) al cerrar conexiones
 if sys.platform.startswith("win"):
@@ -246,4 +263,5 @@ async def get_file(filepath: str):
     elif ext == ".json":
         default_mime = "application/json"
     mime, _ = mimetypes.guess_type(str(path))
+
     return FileResponse(str(path), media_type=mime or default_mime)
